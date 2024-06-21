@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminder</title>
+    <style>
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>To-Do List</h2>
+        <div class="input-group">
+            <label for="title">Event:</label>
+            <input type="text" id="title" placeholder="Enter event name">
+        </div>
+        <div class="input-group">
+            <label for="description">Description:</label>
+            <input type="text" id="description" placeholder="Enter event description">
+        </div>
+        <div class="input-group">
+            <label for="date">Date:</label>
+            <input type="date" id="date">
+        </div>
+        <button onclick="scheduleReminder();">Set Reminder</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="reminderTableBody"></tbody>
+        </table>
+    </div>
+    <script>
+        let reminders = [];
+        let editIndex = -1;
+
+        function scheduleReminder() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+
+            if (!title || !description || !date) {
+                alert('Please fill out all fields.');
+                return;
+            }
+
+            const reminder = { title, description, date };
+
+            if (editIndex === -1) {
+                reminders.push(reminder);
+            } else {
+                reminders[editIndex] = reminder;
+                editIndex = -1;
+            }
+
+            clearInputs();
+            renderReminders();
+        }
+
+        function clearInputs() {
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('date').value = '';
+        }
+
+        function renderReminders() {
+            const tableBody = document.getElementById('reminderTableBody');
+            tableBody.innerHTML = '';
+
+            reminders.forEach((reminder, index) => {
+                const row = tableBody.insertRow();
+
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+
+                cell1.textContent = reminder.title;
+                cell2.textContent = reminder.description;
+                cell3.textContent = reminder.date;
+                cell4.innerHTML = `
+                    <button onclick="editReminder(${index});">Edit</button>
+                    <button onclick="deleteReminder(${index});">Delete</button>
+                `;
+            });
+        }
+
+        function deleteReminder(index) {
+            reminders.splice(index, 1);
+            renderReminders();
+        }
+
+        function editReminder(index) {
+            const reminder = reminders[index];
+            document.getElementById('title').value = reminder.title;
+            document.getElementById('description').value = reminder.description;
+            document.getElementById('date').value = reminder.date;
+
+            editIndex = index;
+        }
+    </script>
+</body>
+</html>
